@@ -96,10 +96,9 @@ def upload():
             except Exception as e:
                 return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
             
-        main_predict('image.jpg', text)
+        text, image_base64 = main_predict('image.jpg', text)
 
-
-        return jsonify({'error': 'No image or audio provided'}), 400
+        return jsonify({'image': image_base64, 'text': text}), 200
     except Exception as e:
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 

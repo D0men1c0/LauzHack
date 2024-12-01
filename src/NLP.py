@@ -8,11 +8,22 @@ import cv2
 from PIL import Image, ImageDraw
 from lang_sam import LangSAM
 import pickle
-from matplotlib import pyplot as plt
 import textwrap
+
+def parse_coordinates(coord):
+    if isinstance(coord, str):
+        return list(map(float, coord.strip("[]").split()))
+    elif isinstance(coord, np.ndarray):
+        return coord.tolist()
+    else:
+        raise ValueError("Unsupported type for coordinates.")
+
 
 def main_predict(image_path, query):
     
+    image_path = "ships.jpg"
+    query = "Return the gray ships in the space."
+
     load_dotenv()
     sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     options = os.getenv("OPTIONS").split(",")
@@ -52,7 +63,7 @@ def main_predict(image_path, query):
     image_pil = Image.open(image_path).convert("RGB")
     results = model_sam.predict([image_pil], [f"{best_option}."], box_threshold=0.23)
 
-
+    '''
     plt.figure(figsize=(10, 10))
     plt.imshow(image_pil)
     plt.axis('off')
@@ -69,7 +80,7 @@ def main_predict(image_path, query):
             ))
 
     plt.title("Segmentation on Original Image")
-    plt.show()
+    plt.show()'''
 
     def calculate_features(points, image):
         x_min = int(min(p[0] for p in points))
@@ -190,10 +201,9 @@ def main_predict(image_path, query):
             - If a specific color name is provided, use the color_category column to filter rows where the color_category matches the requested color.
             - If an RGB range is provided, filter rows where the mean_color_R, mean_color_G, and mean_color_B columns fall within the specified range or infer a default tolerance of {tolerance} per channel if not provided.
 
-            Write Python code based on the query, and assign the result to a variable called `filtered_data`. 
-            The value of `filtered_data` should:
-            - Be a pandas DataFrame if the query results in filtered rows of data.
-            - Be a single value (e.g., count, shape, or aggregate value) if the query involves aggregation or numeric operations.
+            Write Python code based on the query, and assign the result to two variables called 'filtered_data' and 'output_variable'.
+            The value of `filtered_data` should be always a pandas DataFrame that do not contains aggregations.
+            Then assign to a output_variabile the result if you have to do aggregations also or just copy the filtered_data.
 
             Do not include comments or import statements or library, only the Python code.
         """}
@@ -210,12 +220,20 @@ def main_predict(image_path, query):
                 """
                 with open('filtered_data.pkl', 'wb') as f:
                     pickle.dump(filtered_data, f)
+                
+                with open('output_variable.pkl', 'wb') as f:
+                    pickle.dump(output_variable, f)
                 """
             )
         )
 
         with open("filtered_data.pkl", "rb") as f:
             filtered_data = pickle.load(f)
+
+        
+        with open("output_variable.pkl", "rb") as f:
+            output_variable = pickle.load(f)
+
         try:
             original_image = Image.open(image_path)
 
@@ -226,10 +244,10 @@ def main_predict(image_path, query):
 
             for _, row in filtered_data.iterrows():
                 rect_coords = [
-                    list(map(float, row["coord_1"].strip("[]").split())),
-                    list(map(float, row["coord_2"].strip("[]").split())),
-                    list(map(float, row["coord_3"].strip("[]").split())),
-                    list(map(float, row["coord_4"].strip("[]").split()))
+                    list(map(float, parse_coordinates(row["coord_1"]))),
+                    list(map(float, parse_coordinates(row["coord_2"]))),
+                    list(map(float, parse_coordinates(row["coord_3"]))),
+                    list(map(float, parse_coordinates(row["coord_4"])))
                 ]
 
                 rect_coords = [tuple(map(int, coord)) for coord in rect_coords]
@@ -242,26 +260,17 @@ def main_predict(image_path, query):
 
                 rectangles_image.paste(cropped_rectangle, (x1, y1))
 
-            plt.figure(figsize=(12, 6))
-
-            plt.subplot(1, 2, 1)
-            plt.imshow(highlighted_image)
-            plt.title("Original Image with Highlighted Rectangles")
-            plt.axis("off")
-
-            plt.subplot(1, 2, 2)
-            plt.imshow(rectangles_image)
-            plt.title("Image with Rectangles Only")
-            plt.axis("off")
-
-            plt.tight_layout()
-            plt.show()
         except Exception as e:
-            print(filtered_data)
-            return filtered_data
+            print(f"An error occurred while visualizing the results: {e}")
+            return None, None
 
+        highlighted_image_base64 = rectangles_image.tobytes()
+        return output_variable, highlighted_image_base64
     except Exception as e:
         print(f"An error occurred: {e}")
+        return None, None
 
 if __name__ == "__main__":
-    main_predict(image_path, query)
+    image_path = "ships.jpg"
+    query = "Return the gray ships in the space."
+    uno, due = main_predict(image_path, query)
