@@ -68,7 +68,7 @@ def upload():
                 # Optionally save and reopen for re-encoding
                 image = Image.open(BytesIO(image_data))
                 buffer = BytesIO()
-                image.save(buffer, format="JPEG")
+                image.save(buffer, format="PNG")
                 buffer.seek(0)
 
                 # save the image on the disk
