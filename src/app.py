@@ -92,7 +92,6 @@ def upload():
                 # Use Whisper to transcribe
                 result = whisper_model(audio_final)
                 text = result['text']
-                return jsonify({'OK': 'Audio processed successfully', 'transcription': text}), 200
             except Exception as e:
                 return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
         else:
