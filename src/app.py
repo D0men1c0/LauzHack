@@ -34,7 +34,8 @@ def load_audio_with_ffmpeg(file_path, target_sr=16000):
         )
         # Convert the binary result to a NumPy array
         wav_data = process.stdout
-        audio = np.frombuffer(wav_data, dtype=np.int16)
+        audio = np.frombuffer(wav_data, dtype=np.int16).astype(np.float32) / 32768.0
+        
         return audio
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Error with ffmpeg: {e.stderr.decode()}")
