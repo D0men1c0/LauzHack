@@ -6,6 +6,7 @@ from io import BytesIO
 import numpy as np
 import imageio_ffmpeg as ffmpeg
 from transformers import pipeline
+from NLP import main_predict
 
 app = Flask(__name__)
 whisper_model = pipeline("automatic-speech-recognition", model="openai/whisper-small")
@@ -70,13 +71,9 @@ def upload():
                 image.save(buffer, format="JPEG")
                 buffer.seek(0)
 
-                # Re-encode the validated image back to Base64
-                reencoded_image_b64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+                # save the image on the disk
+                image.save('image.jpg')
 
-                return jsonify({
-                    'OK': 'Image received and verified successfully',
-                    'reencoded_image': reencoded_image_b64
-                }), 200
             except Exception as e:
                 return jsonify({'error': f'Invalid image file: {str(e)}'}), 400
 
@@ -98,6 +95,9 @@ def upload():
                 return jsonify({'OK': 'Audio processed successfully', 'transcription': text}), 200
             except Exception as e:
                 return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
+            
+        main_predict('image.jpg', text)
+
 
         return jsonify({'error': 'No image or audio provided'}), 400
     except Exception as e:
