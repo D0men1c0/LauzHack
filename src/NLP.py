@@ -159,7 +159,7 @@ def main_predict(image_path, query):
             "coord_4": points[3],
             "mean_x": mean_x,
             "mean_y": mean_y,
-            "color_category": color_category,
+            "color": color_category,
             "area": area,
             "relative_area": relative_area,
             "relative_height": relative_height,
