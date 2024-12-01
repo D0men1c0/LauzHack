@@ -12,6 +12,26 @@ from lang_sam import LangSAM
 import pickle
 import textwrap
 
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
+
+def output_to_text(query, output):
+    if isinstance(output, pd.DataFrame):
+        output_string = output.to_string()
+    else:
+        output_string = str(output)
+
+    prompt = f"The user asked: '{query}'. Below is the result:\n\nOutput:\n{output_string}\n\nExplain the result naturally:"
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=prompt,
+        max_tokens=1000,
+        temperature=0,
+    )
+
+    return response.choices[0].message.content
+
 def parse_coordinates(coord):
     if isinstance(coord, str):
         return list(map(float, coord.strip("[]").split()))
@@ -25,8 +45,6 @@ def main_predict(image_path, query):
     load_dotenv()
     sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     options = os.getenv("OPTIONS").split(",")
-    api_key = os.getenv("OPENAI_API_KEY")
-    client = OpenAI(api_key=api_key)
     features = os.getenv("FEATURES").split(",")
 
     image = cv2.imread(image_path)
@@ -201,7 +219,7 @@ def main_predict(image_path, query):
 
             Write Python code based on the query and assign the results as follows:
             - `filtered_data`: A pandas DataFrame containing rows that match the filtering criteria without any aggregation.
-            - `output_variable`: Either the aggregated result if the query requires aggregation or a copy of `filtered_data` if no aggregation is specified.
+            - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
         """}
@@ -268,7 +286,7 @@ def main_predict(image_path, query):
         highlighted_image.save(buffered, format="PNG")
         image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-        return output_variable, image_base64
+        return output_to_text(query, str(output_variable)), image_base64
     except Exception as e:
         print(f"An error occurred: {e}")
         return None, None
