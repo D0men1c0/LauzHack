@@ -223,8 +223,7 @@ def main_predict(image_path, query):
             - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
-            Please attention for with multiple conditions used brackets for each condition and with calculations used brackets for each calculation.
-            value = 395 /2 , df[df['coord_1'] < value].
+            For dataset condition, try to use try and except block to avoid any error because there is a possibility to have a numpy array in the dataset.
         """}
     ]
 
