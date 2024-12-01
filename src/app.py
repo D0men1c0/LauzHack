@@ -55,12 +55,7 @@ def upload():
         if has_image:
             image_b64 = data['image']
             try:
-                print('Image received')
-                print(image_b64)
                 image_data = base64.b64decode(image_b64)
-
-                print('Image data decoded')
-                print(image_data)
 
                 return jsonify({'image_received': image_b64, 'image_decoded': image_data}), 200
             except Exception:
