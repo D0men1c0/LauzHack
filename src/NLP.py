@@ -25,7 +25,7 @@ def output_to_text(query, output):
         output_string = str(output)
 
     messages = [
-    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the result in 1 sentence:"}
+    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the result in 1a few short words."}
     ]
 
     response = client.chat.completions.create(
@@ -223,8 +223,13 @@ def main_predict(image_path, query):
             - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
-            Please attention for with multiple conditions used brackets for each condition and with calculations used brackets for each calculation.
-            value = 395 /2 , df[df['coord_1'] < value].
+            For dataset condition, try to use try and except block to avoid any error because there is a possibility to have a numpy array in the dataset.
+            This is an example of the code you should write:
+            try:
+                filtered_df = df[df["coord_1"] < 365 / 2]
+            except Exception:
+                mask = df["coord_1"].apply(lambda x: np.all(x < 365 / 2) if isinstance(x, np.ndarray) else x < 365 / 2)
+                filtered_df = df[mask]
         """}
     ]
 
