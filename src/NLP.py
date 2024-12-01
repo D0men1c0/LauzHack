@@ -223,13 +223,6 @@ def main_predict(image_path, query):
             - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
-            If there are any conditions or exceptions, handle them accordingly. For example, if the dataset contains numpy arrays, use a try-except block to avoid errors.
-            This is an example of the code you should write:
-            try:
-                filtered_df = df[df["coord_1"] < 365 / 2]
-            except Exception:
-                mask = df["coord_1"].apply(lambda x: np.all(x < 365 / 2) if isinstance(x, np.ndarray) else x < 365 / 2)
-                filtered_df = df[mask]
         """}
     ]
 
