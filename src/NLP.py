@@ -12,6 +12,9 @@ from lang_sam import LangSAM
 import pickle
 import textwrap
 
+load_dotenv()
+sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+options = os.getenv("OPTIONS").split(",")
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
@@ -42,10 +45,6 @@ def parse_coordinates(coord):
 
 
 def main_predict(image_path, query):
-    load_dotenv()
-    sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-    options = os.getenv("OPTIONS").split(",")
-    features = os.getenv("FEATURES").split(",")
 
     image = cv2.imread(image_path)
 
