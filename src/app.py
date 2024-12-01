@@ -61,7 +61,8 @@ def upload():
 
                 print('Image data decoded')
                 print(image_data)
-                # Process image if needed
+
+                return jsonify({'image_received': image_b64, 'image_decoded': image_data}), 200
             except Exception:
                 return jsonify({'error': 'Invalid image file'}), 400
 
