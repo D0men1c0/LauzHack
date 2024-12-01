@@ -261,7 +261,11 @@ def main_predict(image_path, query):
             print(f"An error occurred while visualizing the results: {e}")
             return None, None
 
-        return output_variable, highlighted_image
+        buffered = io.BytesIO()
+        highlighted_image.save(buffered, format="PNG")
+        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        return output_variable, image_base64
     except Exception as e:
         print(f"An error occurred: {e}")
         return None, None
