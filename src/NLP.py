@@ -223,6 +223,7 @@ def main_predict(image_path, query):
             - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
+            Please attention for with multiple conditions used brackets for each condition.s
         """}
     ]
 
