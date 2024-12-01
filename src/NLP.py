@@ -231,6 +231,9 @@ def main_predict(image_path, query):
         with open("output_variable.pkl", "rb") as f:
             output_variable = pickle.load(f)
 
+        print(output_variable)
+        print(type(output_variable))
+
         try:
             original_image = Image.open(image_path)
 
