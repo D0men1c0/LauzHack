@@ -1,6 +1,8 @@
 import subprocess
 from flask import Flask, request, jsonify
 import base64
+from PIL import Image
+from io import BytesIO
 import numpy as np
 import imageio_ffmpeg as ffmpeg
 from transformers import pipeline
@@ -50,16 +52,33 @@ def upload():
 
         has_image = 'image' in data
         has_audio = 'audio' in data
-        text = ''
 
         if has_image:
             image_b64 = data['image']
             try:
+                # Decode the Base64 image
                 image_data = base64.b64decode(image_b64)
 
-                return jsonify({'image_received': image_b64, 'image_decoded': image_data}), 200
-            except Exception:
-                return jsonify({'error': 'Invalid image file'}), 400
+                # Validate the image using PIL
+                image = Image.open(BytesIO(image_data))
+                image.verify()  # Verify image integrity
+                print("Image verified successfully!")
+
+                # Optionally save and reopen for re-encoding
+                image = Image.open(BytesIO(image_data))
+                buffer = BytesIO()
+                image.save(buffer, format="JPEG")
+                buffer.seek(0)
+
+                # Re-encode the validated image back to Base64
+                reencoded_image_b64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+                return jsonify({
+                    'OK': 'Image received and verified successfully',
+                    'reencoded_image': reencoded_image_b64
+                }), 200
+            except Exception as e:
+                return jsonify({'error': f'Invalid image file: {str(e)}'}), 400
 
         if has_audio:
             audio_b64 = data['audio']
@@ -76,15 +95,11 @@ def upload():
                 # Use Whisper to transcribe
                 result = whisper_model(audio_final)
                 text = result['text']
+                return jsonify({'OK': 'Audio processed successfully', 'transcription': text}), 200
             except Exception as e:
                 return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
-        else:
-            if 'text' in data:
-                text = data['text']
-            else:
-                return jsonify({'error': 'No audio or text provided'}), 400
 
-        return jsonify({'OK': 'Data uploaded', 'transcription': text}), 200
+        return jsonify({'error': 'No image or audio provided'}), 400
     except Exception as e:
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
