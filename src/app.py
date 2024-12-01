@@ -71,12 +71,12 @@ def upload():
         # Use Whisper's `transcribe` method with the buffer
         result = whisper_model(audio_final)
 
-        text = result['text', '']
+        text = result['text']
         #text = 'test'
       except Exception as e:
         return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
     else:
-      text = data['text', '']
+      text = data['text']
 
     return jsonify({'OK': 'Data uploaded', 'trascription': text}), 200
 
