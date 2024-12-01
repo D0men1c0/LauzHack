@@ -25,7 +25,7 @@ def output_to_text(query, output):
         output_string = str(output)
 
     messages = [
-    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the result in 1-2 sentences:"}
+    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the result in 1 sentence:"}
     ]
 
     response = client.chat.completions.create(
@@ -223,7 +223,8 @@ def main_predict(image_path, query):
             - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
-            Please attention for with multiple conditions used brackets for each condition.s
+            Please attention for with multiple conditions used brackets for each condition and with calculations used brackets for each calculation.
+            value = 395 /2 , df[df['coord_1'] < value].
         """}
     ]
 
