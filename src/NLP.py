@@ -25,9 +25,8 @@ def output_to_text(query, output):
         output_string = str(output)
 
     messages = [
-    {"role": "system", "content": f"The user asked: '{query}'. The following is the result:\n\nOutput:\n{output_string}\n\nProvide a concise and general explanation of the result in simple terms:"}
+    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the result in 1-2 sentences:"}
     ]
-
 
     response = client.chat.completions.create(
         model="gpt-4o",
