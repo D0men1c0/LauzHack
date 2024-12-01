@@ -1,3 +1,5 @@
+import base64
+import io
 import os
 from sentence_transformers import SentenceTransformer
 import numpy as np
@@ -258,9 +260,12 @@ def main_predict(image_path, query):
         except Exception as e:
             print(f"An error occurred while visualizing the results: {e}")
             return None, None
+        
+        buffered = io.BytesIO()
+        highlighted_image.save(buffered, format="JPG")
+        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-        highlighted_image_base64 = rectangles_image.tobytes()
-        return output_variable, highlighted_image_base64
+        return output_variable, image_base64
     except Exception as e:
         print(f"An error occurred: {e}")
         return None, None
