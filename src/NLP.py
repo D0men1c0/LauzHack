@@ -20,10 +20,6 @@ def parse_coordinates(coord):
 
 
 def main_predict(image_path, query):
-    
-    image_path = "ships.jpg"
-    query = "Return the gray ships in the space."
-
     load_dotenv()
     sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     options = os.getenv("OPTIONS").split(",")
