@@ -190,21 +190,20 @@ def main_predict(image_path, query):
         {"role": "system", "content": "You are an assistant that helps write Python code."},
         {"role": "user", "content": 
         f"""
-            Considering the following {df.columns} columns in pandas dataframes. Image dimensions are {image_width}x{image_height} and the area is {image_area}.
+            The dataframe contains the following columns: {df.columns}. Image dimensions are {image_width}x{image_height}, and the total area is {image_area}. 
             The user's query is: "{query}".
 
-            If the query includes a color filter:
-            - If a specific color name is provided, use the color_category column to filter rows where the color_category matches the requested color.
-            - If an RGB range is provided, filter rows where the mean_color_R, mean_color_G, and mean_color_B columns fall within the specified range or infer a default tolerance of {tolerance} per channel if not provided.
+            - If the query explicitly mentions a color filter:
+                - Use the `color_category` column to filter rows where the `color_category` matches the specified color name.
+                - For RGB ranges, filter rows where `mean_color_R`, `mean_color_G`, and `mean_color_B` fall within the specified range. If no range is provided, apply a default tolerance of {tolerance} per channel.
 
-            Write Python code based on the query, and assign the result to two variables called 'filtered_data' and 'output_variable'.
-            The value of `filtered_data` should be always a pandas DataFrame that do not contains aggregations.
-            Then assign to a output_variabile the result if you have to do aggregations also or just copy the filtered_data.
+            Write Python code based on the query and assign the results as follows:
+            - `filtered_data`: A pandas DataFrame containing rows that match the filtering criteria without any aggregation.
+            - `output_variable`: Either the aggregated result if the query requires aggregation or a copy of `filtered_data` if no aggregation is specified.
 
-            Do not include comments or import statements or library, only the Python code.
+            Do not include comments, import statements, or library declarations. Write only the Python code.
         """}
     ]
-
 
     filtered_data = None
     try:
