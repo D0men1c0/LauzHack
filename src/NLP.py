@@ -25,7 +25,7 @@ def output_to_text(query, output):
         output_string = str(output)
 
     messages = [
-    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the result in 1a few short words."}
+    {"role": "system", "content": f"The user asked: '{query}'. Based on the output:\n\n{output_string}\n\nExplain the results in a few words, just 5-10 sentences."},
     ]
 
     response = client.chat.completions.create(
@@ -223,7 +223,7 @@ def main_predict(image_path, query):
             - `output_variable`: The aggregated result if the query requires aggregation.
 
             Do not include comments, import statements, or library declarations. Write only the Python code.
-            For dataset condition, try to use try and except block to avoid any error because there is a possibility to have a numpy array in the dataset.
+            If there are any conditions or exceptions, handle them accordingly. For example, if the dataset contains numpy arrays, use a try-except block to avoid errors.
             This is an example of the code you should write:
             try:
                 filtered_df = df[df["coord_1"] < 365 / 2]
