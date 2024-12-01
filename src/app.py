@@ -95,6 +95,8 @@ def upload():
                 return jsonify({'OK': 'Audio processed successfully', 'transcription': text}), 200
             except Exception as e:
                 return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
+        else:
+          text = data['text']
             
         text, image_base64 = main_predict('image.jpg', text)
 
