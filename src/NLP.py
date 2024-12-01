@@ -24,11 +24,13 @@ def output_to_text(query, output):
     else:
         output_string = str(output)
 
-    prompt = f"The user asked: '{query}'. Below is the result:\n\nOutput:\n{output_string}\n\nExplain the result naturally:"
+    messages = [
+        {"role": "system", "content": f"The user asked: '{query}'. Below is the result:\n\nOutput:\n{output_string}\n\nExplain the result naturally:"}
+    ]
 
     response = client.chat.completions.create(
         model="gpt-4o",
-        messages=prompt,
+        messages=messages,
         max_tokens=1000,
         temperature=0,
     )
