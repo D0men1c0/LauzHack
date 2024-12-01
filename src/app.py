@@ -1,16 +1,42 @@
-from io import BytesIO
-import io
+import subprocess
 from flask import Flask, request, jsonify
 from PIL import Image
 import base64
-from transformers import pipeline
-import os
 import numpy as np
-from pydub import AudioSegment
-from scipy.io import wavfile
+import imageio_ffmpeg as ffmpeg
+from transformers import pipeline
 
 app = Flask(__name__)
 whisper_model = pipeline("automatic-speech-recognition", model="openai/whisper-small")
+
+# Funzione per leggere e preprocessare l'audio con ffmpeg tramite subprocess
+def load_audio_with_ffmpeg(file_path, target_sr=16000):
+    # Ottieni il percorso dell'eseguibile ffmpeg
+    ffmpeg_exe = ffmpeg.get_ffmpeg_exe()
+    
+    # Comando ffmpeg per convertire l'audio
+    ffmpeg_cmd = [
+        ffmpeg_exe,
+        "-i", file_path,         # Input file
+        "-f", "wav",             # Output formato WAV
+        "-ar", str(target_sr),   # Campionamento a 16 kHz
+        "-ac", "1",              # Mono
+        "pipe:1"                 # Output come stream binario
+    ]
+    
+    # Esegui il comando e cattura l'output
+    process = subprocess.run(
+        ffmpeg_cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True
+    )
+    
+    # Converte il risultato binario in array NumPy
+    wav_data = process.stdout
+    audio = np.frombuffer(wav_data, dtype=np.int16)
+    return audio
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -36,14 +62,17 @@ def upload():
       try:
         audio_data = base64.b64decode(audio_b64)
 
-        # Create a byte buffer
-        audio_buffer = io.BytesIO(audio_data)
+        # write the audio data to a file
+        with open('audio.wav', 'wb') as audio_file:
+            audio_file.write(audio_data)
+
+        audio_final = load_audio_with_ffmpeg('audio.wav')
 
         # Use Whisper's `transcribe` method with the buffer
-        result = whisper_model(audio_buffer)
+        result = whisper_model(audio_final)
 
         text = result['text']
-        text = 'test'
+        #text = 'test'
       except Exception as e:
         return jsonify({'error': f'Error occurred while processing audio file: {str(e)}'}), 500
     else:
