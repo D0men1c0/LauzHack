@@ -5,9 +5,8 @@
 This project was developed during the **Lauz Hack** hackathon at EPFL in just **22 hours**, with a team of four people collaborating on distinct fields to parallelize the work. The roles were divided as follows:
 - **NLP Specialist**: Focused on natural language query understanding and feature extraction.
 - **Computer Vision Engineer**: Developed the segmentation pipeline and integrated it with the SAM model.
-- **Backend Developer**: Managed the Flask server and ensured seamless communication between models and the frontend.
-- **Cloud Engineer**: Deployed and hosted the system on **AWS EC2**, ensuring stable and scalable performance.
 - **Frontend Developer**: Built the Flutter-based user interface to handle multi-modal input and display results.
+- **Backend and Cloud Developer**: Deployed and hosted the system on **AWS EC2**, ensuring stable and scalable performance. Additionally, managed the Flask server to facilitate seamless communication between the models and the frontend.
 
 Given the tight timeframe, this architecture demonstrates the team's efficiency in integrating state-of-the-art AI models into a functional and scalable system. However, there is significant potential for future improvements.
 
